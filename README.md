@@ -1,26 +1,15 @@
-# GettingUpTool
-Tool for viewing, exporting and replacing textures in the game Marc Ecko's Getting Up
+# Marc Ecko's Getting Up Mod Tool
 
-<div>
-  <strong>Basic usage of the tool</strong><br>
-  Tool should automatically find your game folder<br>
-  On left-hand side you get a tree-view of the games folder structure<br>
-  Here you can find all the textures for graffiti etc.<br>
-  Click in the tree to navigate, find the textures<br>
-  Click on a texture to view it in the tool, then you can export it to DDS file<br>
-  Edit the DDS file in your editor of choice
-</div><br>
+Tool for viewing, exporting and replacing textures/graffiti in the game [Marc Ecko's Getting Up: Contents Under Pressure](https://store.steampowered.com/app/260190/)
 
-<div>
-  The games textures are stored in files with the extension ST<br>
-  They are essentially DDS but with a different header<br>
-  I have not bothered to figure out the entire header (struct PixelData)
-</div><br>
+Please [report any issues](https://github.com/Asbra/GettingUpTool/issues).
 
-<p>Each graffiti piece has 3 textures with it, they are for what parts are shown when it's sprayed a little bit, little bit more, and complete piece.</p>
-<br>
+In the future this tool will be a more comprehensive modding tool, not only for textures.
 
-<p>The classes in <strong>Textures/</strong> folder are un-used, but may be useful to anyone wanting to continue work on this tool.
-Feel free to fork it.</p>
+## Installation
+[Download the latest release](https://github.com/Asbra/GettingUpTool/releases/latest) and extract anywhere.
 
-Source is scarcely commented.
+## Usage
+When you start the tool it will attempt to find where your game is installed. Failing this it will ask you to show it.
+
+Please see the Wiki page "[Replacing textures in game](https://github.com/Asbra/GettingUpTool/wiki/Replacing-textures-graffiti-in-Marc-Ecko's-Getting-Up)" to insert your own graffiti into the game.
