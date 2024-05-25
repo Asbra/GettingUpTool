@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonoGame;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -8,7 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-namespace GettingUpTool
+namespace GettingUpTool.Forms
 {
     public partial class TextureTool : Form
     {
@@ -17,32 +18,16 @@ namespace GettingUpTool
             InitializeComponent();
         }
 
-        #region Private variables
-        private string _gamePath;
-        private Texture _texture;
-        private Bitmap bmpAlpha, bmpRGB;
-        private string _githubUrl = "https://github.com/Asbra/GettingUpTool";
-        private string _helpUrl = "https://github.com/Asbra/GettingUpTool/wiki/Replacing-textures-graffiti-in-Marc-Ecko%27s-Getting-Up";
+        #region Public variables
+        public DirectoryInfo GamePath;
         #endregion
 
-        private void BuildTree(DirectoryInfo directoryInfo, TreeNodeCollection addInMe)
-        {
-            TreeNode curNode = addInMe.Add(directoryInfo.Name);
-            
-            foreach (FileInfo file in directoryInfo.GetFiles())
-            {
-                string filext = file.Extension.ToLower();
-                if (filext == ".st") // || filext == ".bir" || filext == ".dds" || filext == ".st2")
-                {
-                    curNode.Nodes.Add(file.FullName, file.Name);
-                }
-            }
+        #region Private variables
+        private Texture _texture;
+        private Bitmap bmpAlpha, bmpRGB;
 
-            foreach (DirectoryInfo subdir in directoryInfo.GetDirectories())
-            {
-                BuildTree(subdir, curNode.Nodes);
-            }
-        }
+        private string[] _targetFileExtensions = { ".st", ".stx", ".dds" };
+        #endregion
 
         #region Texture functions
         //
@@ -73,27 +58,31 @@ namespace GettingUpTool
             //
             // Get file information
             //
-            // @TODO: Fix this inheritance
+            // TODO: Fix this inheritance
             _texture = new Texture(path);
 
-            if (_texture.Type == TextureType.ST)
+            try
             {
-                _texture = new ST(path);// _texture.Data);
+                if (_texture.Type == TextureType.ST)
+                {
+                    _texture = new ST(path);// _texture.Data);
+                }
+                else if (_texture.Type == TextureType.ST2)
+                {
+                    _texture = new ST2(path);//_texture.Data);
+                }
+                else if (_texture.Type == TextureType.DDS)
+                {
+                    _texture = new DDS(path);//_texture.Data);
+                }
+                else
+                {
+                    // Other file extension
+                    MessageBox.Show("Unknown file format", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return false;
+                }
             }
-            else if (_texture.Type == TextureType.ST2)
-            {
-                _texture = new ST2(path);//_texture.Data);
-            }
-            else if (_texture.Type == TextureType.DDS)
-            {
-                _texture = new DDS(path);//_texture.Data);
-            }
-            else
-            {
-                // Other file extension
-                MessageBox.Show("Unknown file format", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return false;
-            }
+            catch (Exception _) { MessageBox.Show(_.ToString()); }
 
             // Debug output
             if (chkDebug.Checked)
@@ -128,7 +117,7 @@ namespace GettingUpTool
             }
             else
             {
-                compression = "Unknown";
+                compression = "";
             }
 
             string textureFormat = $"DDS {compression}";
@@ -162,7 +151,7 @@ namespace GettingUpTool
 
             DirectoryInfo path = null;
 
-            // @TODO: Implement a config file
+            // TODO: Implement a config file
 
             try
             {
@@ -211,22 +200,16 @@ namespace GettingUpTool
             {
                 if (path != null && path.Exists)
                 {
-                    _gamePath = path.FullName;
-                    openFileDialog.InitialDirectory = _gamePath;
+                    GamePath = path;
+                    openFileDialog.InitialDirectory = GamePath.FullName;
 
-                    BuildTree(path, treeGameFiles.Nodes);
-                    if (treeGameFiles.Nodes.Count > 0)
-                    {
-                        treeGameFiles.Nodes[0].Expand();
-                        if (treeGameFiles.Nodes[0].Nodes.Count > 0)
-                            treeGameFiles.Nodes[0].Nodes[0].Expand();
-                    }
+                    UI.RebuildFileTree(GamePath, treeGameFiles.Nodes, _targetFileExtensions);
                 }
                 else throw new DirectoryNotFoundException();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Invalid game folder, please report the following error at {_githubUrl}/issues" + Environment.NewLine + ex.ToString());
+                MessageBox.Show($"Invalid game folder, please report the following error at {UI.GithubUrl}/issues" + Environment.NewLine + ex.ToString());
             }
         }
 
@@ -252,7 +235,7 @@ namespace GettingUpTool
 
                 if (_texture.DXT > 0)
                 {
-                    // @TODO: Detect file format
+                    // TODO: Detect file format
                     byte[] ddsBytes = null;
                     if (_texture.Type == TextureType.ST)
                     {
@@ -282,7 +265,21 @@ namespace GettingUpTool
                         Array.Copy(_texture.Data, TextureUtil.DDS_HEADER_SIZE, ddsBytes, 0, _texture.Data.Length - TextureUtil.DDS_HEADER_SIZE);
                     }
 
-                    byte[] bmpBytes = _texture.DXT == 1 ? DxtUtil.DecompressDxt1(ddsBytes, _texture.Width, _texture.Height) : (_texture.DXT >= 4 ? DxtUtil.DecompressDxt5(ddsBytes, _texture.Width, _texture.Height) : DxtUtil.DecompressDxt3(ddsBytes, _texture.Width, _texture.Height));
+                    byte[] bmpBytes = null;
+                    switch (_texture.DXT)
+                    {
+                        case 1:
+                            bmpBytes = DxtUtil.DecompressDxt1(ddsBytes, _texture.Width, _texture.Height);
+                            break;
+                        case 3:
+                            bmpBytes = DxtUtil.DecompressDxt3(ddsBytes, _texture.Width, _texture.Height);
+                            break;
+                        case 5:
+                            bmpBytes = DxtUtil.DecompressDxt5(ddsBytes, _texture.Width, _texture.Height);
+                            break;
+                        default:
+                            throw new ArgumentException($"Unsupported texture compression DXT{_texture.DXT}");
+                    }
 
                     int idx = 0;
                     for (int y = 0; y < _texture.Height; y++)
@@ -302,6 +299,31 @@ namespace GettingUpTool
                             idx += 4;
                         }
                     }
+                }
+                else
+                {
+                    // Uncompressed RGB data
+                    int idx = 0;
+                    for (int y = 0; y < _texture.Height; y++)
+                    {
+                        for (int x = 0; x < _texture.Width; x++)
+                        {
+                            byte r = _texture.Pixels[idx + 0];
+                            byte g = _texture.Pixels[idx + 1];
+                            byte b = _texture.Pixels[idx + 2];
+                            byte a = _texture.Pixels[idx + 3];
+                            Color color = Color.FromArgb(a, r, g, b);
+
+                            bmpRGB.SetPixel(x, y, color);
+
+                            bmpAlpha.SetPixel(x, y, Color.FromArgb(a, 255, 255, 255));
+
+                            idx += 4;
+                        }
+                    }
+
+                    // buttonExportTexture.Enabled = true;
+                    // buttonReplaceTexture.Enabled = true;
                 }
 
                 picAlpha.Image = bmpAlpha;
@@ -470,7 +492,7 @@ namespace GettingUpTool
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
                 return;
 
-            Process.Start("explorer.exe", $"/select,\"{path}\"");
+            // Process.Start("explorer.exe", $"/select,\"{path}\"");
         }
 
         //
@@ -551,6 +573,14 @@ namespace GettingUpTool
                 File.Move(_texture.Path, _texture.Path + filext);
             }
 
+            if (_texture.Type == TextureType.ST)
+            {
+                // ((ST)_texture).Width
+            }
+            else
+            {
+            }
+
             // Replace texture data in memory
             for (int i = TextureUtil.DDS_HEADER_SIZE; i < fileBytes.Length; i++)
             {
@@ -579,23 +609,11 @@ namespace GettingUpTool
                 switch (saveFileDialog.FilterIndex)
                 {
                     case 1: // DDS
-                        try
-                        {
-                            byte[] outBytes = TextureUtil.STtoDDS(_texture.Data);
+                        byte[] outBytes = TextureUtil.STtoDDS(_texture.Data);
 
-                            using (Stream fileStream = saveFileDialog.OpenFile())
-                            {
-                                fileStream.Write(outBytes, 0, outBytes.Length);
-                            }
-
-                            // Write metadata to other file
-                            // @NOTE: We shouldn't need this anymore
-                            // string pathOutMetadata = Path.Combine(Path.GetDirectoryName(_texture.Path), Path.GetFileNameWithoutExtension(_texture.Path) + ".dat");
-                            // File.WriteAllBytes(pathOutMetadata, TextureConversion.STmetadata(_texture.Data));
-                        }
-                        catch (Exception)
+                        using (Stream fileStream = saveFileDialog.OpenFile())
                         {
-                            throw;
+                            fileStream.Write(outBytes, 0, outBytes.Length);
                         }
                         break;
                     case 2: // PNG
@@ -632,12 +650,24 @@ namespace GettingUpTool
         //
         private void linkGithub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(_githubUrl);
+            Process.Start(UI.GithubUrl);
         }
 
         private void linkReadme_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(_helpUrl);
+            Process.Start(UI.HelpUrl);
+        }
+        #endregion
+
+        #region Controls for the tree view
+        private void chkTreeViewFlat_CheckedChanged(object sender, EventArgs e)
+        {
+            UI.RebuildFileTree(GamePath, treeGameFiles.Nodes, _targetFileExtensions, chkTreeViewFlat.Checked);
+        }
+
+        private void btnRefreshTreeView_Click(object sender, EventArgs e)
+        {
+            UI.RebuildFileTree(GamePath, treeGameFiles.Nodes, _targetFileExtensions);
         }
         #endregion
     }

@@ -1,4 +1,4 @@
-﻿namespace GettingUpTool
+﻿namespace GettingUpTool.Forms
 {
     partial class TextureTool
     {
@@ -55,6 +55,8 @@
             this.panelDebug = new System.Windows.Forms.Panel();
             this.comboDXTOverride = new System.Windows.Forms.ComboBox();
             this.textTextureName = new System.Windows.Forms.TextBox();
+            this.chkTreeViewFlat = new System.Windows.Forms.CheckBox();
+            this.btnRefreshTreeView = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picAlpha)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picRGB)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picPixelColor)).BeginInit();
@@ -137,7 +139,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.treeGameFiles.Location = new System.Drawing.Point(12, 9);
             this.treeGameFiles.Name = "treeGameFiles";
-            this.treeGameFiles.Size = new System.Drawing.Size(214, 720);
+            this.treeGameFiles.Size = new System.Drawing.Size(214, 694);
             this.treeGameFiles.TabIndex = 14;
             this.treeGameFiles.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeGameFiles_AfterSelect);
             // 
@@ -321,11 +323,37 @@
             this.textTextureName.Size = new System.Drawing.Size(200, 20);
             this.textTextureName.TabIndex = 45;
             // 
+            // chkTreeViewFlat
+            // 
+            this.chkTreeViewFlat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.chkTreeViewFlat.AutoSize = true;
+            this.chkTreeViewFlat.Location = new System.Drawing.Point(12, 710);
+            this.chkTreeViewFlat.Name = "chkTreeViewFlat";
+            this.chkTreeViewFlat.Size = new System.Drawing.Size(58, 17);
+            this.chkTreeViewFlat.TabIndex = 46;
+            this.chkTreeViewFlat.Text = "Flatten";
+            this.chkTreeViewFlat.UseVisualStyleBackColor = true;
+            this.chkTreeViewFlat.CheckedChanged += new System.EventHandler(this.chkTreeViewFlat_CheckedChanged);
+            // 
+            // btnRefreshTreeView
+            // 
+            this.btnRefreshTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnRefreshTreeView.Font = new System.Drawing.Font("Segoe UI Symbol", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRefreshTreeView.Location = new System.Drawing.Point(202, 705);
+            this.btnRefreshTreeView.Name = "btnRefreshTreeView";
+            this.btnRefreshTreeView.Size = new System.Drawing.Size(24, 24);
+            this.btnRefreshTreeView.TabIndex = 47;
+            this.btnRefreshTreeView.Text = "🔃";
+            this.btnRefreshTreeView.UseVisualStyleBackColor = true;
+            this.btnRefreshTreeView.Click += new System.EventHandler(this.btnRefreshTreeView_Click);
+            // 
             // TextureTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1136, 741);
+            this.Controls.Add(this.btnRefreshTreeView);
+            this.Controls.Add(this.chkTreeViewFlat);
             this.Controls.Add(this.textTextureName);
             this.Controls.Add(this.comboDXTOverride);
             this.Controls.Add(this.panelDebug);
@@ -390,6 +418,8 @@
         private System.Windows.Forms.Panel panelDebug;
         private System.Windows.Forms.ComboBox comboDXTOverride;
         private System.Windows.Forms.TextBox textTextureName;
+        private System.Windows.Forms.CheckBox chkTreeViewFlat;
+        private System.Windows.Forms.Button btnRefreshTreeView;
     }
 }
 

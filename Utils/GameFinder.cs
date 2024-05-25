@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -7,6 +8,11 @@ namespace GettingUpTool
 {
     public static class GameFinder
     {
+        public static bool IsGameRunning()
+        {
+            return Process.GetProcessesByName("GettingUp").Length != 0;
+        }
+
         public static bool ValidateGamePath(DirectoryInfo path)
         {
             bool isValid = false;
@@ -126,7 +132,7 @@ namespace GettingUpTool
                         if (!dirSteamLib.Exists) continue;
 
                         // Check if this library folder contains MEGU
-                        path = new DirectoryInfo(Path.Combine(pathSteam, @"steamapps\common\Marc Ecko's Getting Up 2"));
+                        path = new DirectoryInfo(Path.Combine(dirSteamLib.FullName, @"steamapps\common\Marc Ecko's Getting Up 2"));
                         if (ValidateGamePath(path)) return path;
                     }
                 }

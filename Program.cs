@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace GettingUpTool
+namespace GettingUpTool.Forms
 {
     static class Program
     {
@@ -14,9 +11,19 @@ namespace GettingUpTool
         [STAThread]
         static void Main()
         {
+            while (GameFinder.IsGameRunning())
+            {
+                DialogResult res = MessageBox.Show("Game is already running!\r\nClose game and press OK to continue.", "MEGU Launcher", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                if (res != DialogResult.OK)
+                {
+                    Application.Exit();
+                    return;
+                }
+            }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new TextureTool());
+            Application.Run(new Launcher());
         }
     }
 }

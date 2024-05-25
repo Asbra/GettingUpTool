@@ -36,6 +36,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -45,6 +46,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\GettingUp.ico</ApplicationIcon>
@@ -62,6 +64,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\Launcher.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Launcher.Designer.cs">
+      <DependentUpon>Launcher.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\LevelTool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LevelTool.Designer.cs">
+      <DependentUpon>LevelTool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\PakTool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PakTool.Designer.cs">
+      <DependentUpon>PakTool.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utils\FileAnalysis.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -77,8 +97,18 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Textures\MonoGame-DxtUtil.cs" />
+    <Compile Include="MonoGame\DxtUtil.cs" />
     <Compile Include="Textures\TextureUtil.cs" />
+    <Compile Include="Utils\UiHelpers.cs" />
+    <EmbeddedResource Include="Forms\Launcher.resx">
+      <DependentUpon>Launcher.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LevelTool.resx">
+      <DependentUpon>LevelTool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PakTool.resx">
+      <DependentUpon>PakTool.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\TextureTool.resx">
       <DependentUpon>TextureTool.cs</DependentUpon>
     </EmbeddedResource>

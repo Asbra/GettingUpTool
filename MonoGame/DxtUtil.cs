@@ -41,7 +41,7 @@
 using System;
 using System.IO;
 
-namespace GettingUpTool
+namespace MonoGame
 {
 	internal static class DxtUtil
 	{
